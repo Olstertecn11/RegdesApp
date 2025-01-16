@@ -1,14 +1,17 @@
 import React from 'react';
 import { Box, Button, VStack, Select, CheckIcon, Avatar, HStack, Text } from 'native-base';
 import TitleSpan from '../../components/ui/TitleSpan';
+import { useRouter } from 'expo-router';
 
 export default function InitialMenu() {
   const [selectedChurch, setSelectedChurch] = React.useState('');
   const [selectedClass, setSelectedClass] = React.useState('');
+  const router = useRouter();
 
   const handleContinue = () => {
     if (selectedChurch && selectedClass) {
-      console.log('Continuando con:', { selectedChurch, selectedClass });
+      router.replace('/screens/Dashboard');
+
     } else {
       console.log('Por favor selecciona una iglesia y una clase');
     }
