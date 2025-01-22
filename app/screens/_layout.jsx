@@ -1,6 +1,7 @@
 
 import { Slot } from 'expo-router';
 import { Box } from 'native-base';
+import { SessionProvider } from '../../context/SessionContext';
 
 export default function Layout() {
   return (

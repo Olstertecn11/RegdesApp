@@ -1,21 +1,54 @@
 import React from 'react';
-import { Box, Button, VStack, Select, CheckIcon, Avatar, HStack, Text } from 'native-base';
+import { Text, Box, Button, VStack, Select, CheckIcon, Avatar, HStack } from 'native-base';
 import TitleSpan from '../../components/ui/TitleSpan';
 import { useRouter } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
+import { getChurchs } from '../../services/church';
+import { getClasses } from '../../services/classes';
 
 export default function InitialMenu() {
   const [selectedChurch, setSelectedChurch] = React.useState('');
   const [selectedClass, setSelectedClass] = React.useState('');
+  const [churchs, setChurchs] = React.useState([]);
+  const [classes, setClasses] = React.useState([]);
+  const [filteredClasses, setFilteredClasses] = React.useState([]);
+
   const router = useRouter();
+  const isFocused = useIsFocused();
 
   const handleContinue = () => {
     if (selectedChurch && selectedClass) {
       router.replace('/screens/Dashboard');
-
-    } else {
-      console.log('Por favor selecciona una iglesia y una clase');
     }
   };
+
+  React.useEffect(() => {
+    if (isFocused) {
+      const fetch = async () => {
+        const response = await getChurchs();
+        if (response.status === 200) {
+          setChurchs(response.data);
+        }
+
+        const responseClasses = await getClasses();
+        if (responseClasses.status === 200) {
+          setClasses(responseClasses.data);
+        }
+      };
+      fetch();
+    }
+  }, [isFocused]);
+
+  React.useEffect(() => {
+    if (selectedChurch) {
+      const filtered = classes.filter(
+        (clase) => clase.id_iglesia === parseInt(selectedChurch)
+      );
+      setFilteredClasses(filtered);
+    } else {
+      setFilteredClasses([]);
+    }
+  }, [selectedChurch, classes]);
 
   return (
     <Box bg="#0D0D0D" pt={12} px={4} h="100vh">
@@ -35,7 +68,7 @@ export default function InitialMenu() {
           placeholder="Selecciona una iglesia..."
           bg="gray.800"
           color="white"
-          h='50px'
+          h="50px"
           borderRadius="10"
           fontSize={16}
           w="100%"
@@ -47,9 +80,9 @@ export default function InitialMenu() {
             endIcon: <CheckIcon size="5" color="white" />,
           }}
         >
-          <Select.Item label="Iglesia Central" value="central" />
-          <Select.Item label="Iglesia Norte" value="norte" />
-          <Select.Item label="Iglesia Sur" value="sur" />
+          {churchs.map((church) => (
+            <Select.Item key={church.id} label={church.nombre} value={church.id.toString()} />
+          ))}
         </Select>
 
         <Select
@@ -59,7 +92,8 @@ export default function InitialMenu() {
           borderRadius="10"
           fontSize={16}
           mt={6}
-          h='50px'
+          h="50px"
+          isDisabled={filteredClasses.length === 0}
           borderWidth="0"
           w="100%"
           selectedValue={selectedClass}
@@ -69,10 +103,18 @@ export default function InitialMenu() {
             endIcon: <CheckIcon size="5" color="white" />,
           }}
         >
-          <Select.Item label="Clase Jóvenes" value="jovenes" />
-          <Select.Item label="Clase Adultos" value="adultos" />
-          <Select.Item label="Clase Niños" value="ninos" />
+          {filteredClasses.map((clase) => (
+            <Select.Item key={clase.id} label={clase.nombre} value={clase.id.toString()} />
+          ))}
         </Select>
+        {/*Print message if filteredClasses is 0*/}
+        {filteredClasses.length === 0 && (
+          <Box w="100%" px={4}>
+            <Text color="red.500" fontSize={14}>
+              No hay clases disponibles para esta iglesia
+            </Text>
+          </Box>
+        )}
 
         <Button
           mt="5"

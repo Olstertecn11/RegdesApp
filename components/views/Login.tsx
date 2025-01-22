@@ -4,8 +4,11 @@ import { Box, Button, FormControl, Input, VStack, Text, Link, IconButton, Alert,
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TitleSpan from '../ui/TitleSpan';
+import { login } from '../../services/auth';
+import { useSession } from '../../context/SessionContext';
 
 export default function Login() {
+  const { saveSession } = useSession();
   const router = useRouter();
 
   const emptyUser = { username: '', password: '' };
@@ -13,8 +16,12 @@ export default function Login() {
   const [showAlert, setShowAlert] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleLogin = () => {
-    if (user.username === 'admin' && user.password === 'admin') {
+  const handleLogin = async () => {
+    const response = await login(user);
+    console.log(response);
+    const { data } = response;
+    if (response.status === 200) {
+      saveSession(data.usuarioDB);
       router.replace('/screens/InitialMenu');
     } else {
       setShowAlert(true);
