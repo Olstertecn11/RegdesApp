@@ -5,21 +5,27 @@ import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { getChurchs } from '../../services/church';
 import { getClasses } from '../../services/classes';
+import { useSession } from '../../context/SessionContext';
 
 export default function InitialMenu() {
+  const { user, saveSession } = useSession();
   const [selectedChurch, setSelectedChurch] = React.useState('');
   const [selectedClass, setSelectedClass] = React.useState('');
   const [churchs, setChurchs] = React.useState([]);
   const [classes, setClasses] = React.useState([]);
   const [filteredClasses, setFilteredClasses] = React.useState([]);
+  const [canContinue, setCanContinue] = React.useState(false);
 
   const router = useRouter();
   const isFocused = useIsFocused();
 
   const handleContinue = () => {
-    if (selectedChurch && selectedClass) {
-      router.replace('/screens/Dashboard');
-    }
+    if (!selectedChurch || !selectedClass) return;
+    console.log(selectedChurch);
+    console.log(selectedClass);
+    const selcted_class = { id_church: selectedChurch, id_class: selectedClass };
+    saveSession({ ...user, selcted_class });
+    router.replace('/screens/Dashboard');
   };
 
   React.useEffect(() => {
@@ -48,7 +54,17 @@ export default function InitialMenu() {
     } else {
       setFilteredClasses([]);
     }
+
   }, [selectedChurch, classes]);
+
+
+  React.useEffect(() => {
+    if (selectedClass) {
+      setCanContinue(true);
+      return;
+    }
+    setCanContinue(false);
+  }, [selectedClass]);
 
   return (
     <Box bg="#0D0D0D" pt={12} px={4} h="100vh">
@@ -58,7 +74,9 @@ export default function InitialMenu() {
         </Box>
         <Avatar
           size="lg"
-          source={{ uri: 'https://via.placeholder.com/150' }}
+          src={
+            'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+          }
           mt={4}
         />
       </HStack>
@@ -107,7 +125,6 @@ export default function InitialMenu() {
             <Select.Item key={clase.id} label={clase.nombre} value={clase.id.toString()} />
           ))}
         </Select>
-        {/*Print message if filteredClasses is 0*/}
         {filteredClasses.length === 0 && (
           <Box w="100%" px={4}>
             <Text color="red.500" fontSize={14}>
@@ -120,6 +137,7 @@ export default function InitialMenu() {
           mt="5"
           bg="#3A9E7F"
           w="40%"
+          isDisabled={!canContinue}
           borderRadius="25px"
           _pressed={{ bg: '#317C68' }}
           onPress={handleContinue}

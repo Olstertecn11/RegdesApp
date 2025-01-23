@@ -1,15 +1,17 @@
 
 import React from 'react';
-import { Box, Button, FormControl, Input, VStack, Text, Link, IconButton, Alert, HStack, CloseIcon } from 'native-base';
+import { Avatar, Box, Button, FormControl, Input, VStack, Text, Link, IconButton, Alert, HStack, CloseIcon } from 'native-base';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TitleSpan from '../ui/TitleSpan';
 import { login } from '../../services/auth';
 import { useSession } from '../../context/SessionContext';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Login() {
-  const { saveSession } = useSession();
+  const { saveSession, user: sessionUser } = useSession();
   const router = useRouter();
+  const isFocused = useIsFocused();
 
   const emptyUser = { username: '', password: '' };
   const [user, setUser] = React.useState(emptyUser);
@@ -27,6 +29,19 @@ export default function Login() {
       setShowAlert(true);
     }
   };
+
+  React.useEffect(() => {
+    if (isFocused) {
+      if (sessionUser) {
+        console.log(sessionUser);
+        router.replace('/screens/InitialMenu');
+      }
+      else {
+        console.log('No hay usuario en sesion');
+      }
+    }
+  }, [isFocused])
+
 
   return (
     <Box bg="#0D0D0D" pt={12} px={4} h={'100vh'}>
