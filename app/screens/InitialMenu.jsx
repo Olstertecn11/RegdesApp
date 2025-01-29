@@ -25,7 +25,7 @@ export default function InitialMenu() {
     console.log(selectedClass);
     const selcted_class = { id_church: selectedChurch, id_class: selectedClass };
     saveSession({ ...user, selcted_class });
-    router.replace('/screens/Dashboard');
+    router.push('/screens/Dashboard');
   };
 
   React.useEffect(() => {

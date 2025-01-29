@@ -6,9 +6,9 @@ export const login = async (credentials) => {
 }
 
 export const logout = async (token) => {
-  return handleRequest(() => api.post('/auth/logout', { token }));
+  return handleRequest(() => api.post('/logout', { token }));
 }
 
-export const getInfo = async (token) => {
-  return handleRequest(() => api.post('/auth/me', { token }));
+export const getInfo = async (user) => {
+  return handleRequest(() => api.get('/me', { usuario: user }));
 }

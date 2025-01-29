@@ -4,7 +4,7 @@ import { Avatar, Box, Button, FormControl, Input, VStack, Text, Link, IconButton
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TitleSpan from '../ui/TitleSpan';
-import { login } from '../../services/auth';
+import { login, getInfo } from '../../services/auth';
 import { useSession } from '../../context/SessionContext';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -20,10 +20,17 @@ export default function Login() {
 
   const handleLogin = async () => {
     const response = await login(user);
-    console.log(response);
     const { data } = response;
     if (response.status === 200) {
-      saveSession(data.usuarioDB);
+      const _mydata = await getInfo(data.usuarioDB);
+      console.log(_mydata);
+      if (_mydata.status === 200) {
+        console.log('user data', _mydata.data);
+        saveSession(..._mydata.data);
+      }
+      else {
+        console.log('Error al obtener la información del usuario');
+      }
       router.replace('/screens/InitialMenu');
     } else {
       setShowAlert(true);

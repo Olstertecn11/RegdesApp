@@ -14,6 +14,8 @@ export const SessionProvider = ({ children }) => {
     try {
       const storedUser = await AsyncStorage.getItem("user");
       if (storedUser) {
+        console.log('have session');
+        console.log(JSON.parse(storedUser));
         setUser(JSON.parse(storedUser));
       } else {
         // if (router.current.pathname !== "/") {
