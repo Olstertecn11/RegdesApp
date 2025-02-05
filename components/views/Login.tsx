@@ -7,6 +7,7 @@ import TitleSpan from '../ui/TitleSpan';
 import { login, getInfo } from '../../services/auth';
 import { useSession } from '../../context/SessionContext';
 import { useIsFocused } from '@react-navigation/native';
+import { constants } from '../../constants/env';
 
 export default function Login() {
   const { saveSession, user: sessionUser } = useSession();
@@ -20,18 +21,15 @@ export default function Login() {
 
   const handleLogin = async () => {
     const response = await login(user);
-    const { data } = response;
     if (response.status === 200) {
-      const _mydata = await getInfo(data.usuarioDB);
-      console.log(_mydata);
-      if (_mydata.status === 200) {
-        console.log('user data', _mydata.data);
-        saveSession(..._mydata.data);
+      const session = { token: response.data.token, user: response.data.usuarioDB };
+      saveSession(session);
+      if (session.user.id_privilegios == constants.privileges.teacher) {
+        router.push('/screens/TeacherMenu' as any);
       }
-      else {
-        console.log('Error al obtener la información del usuario');
+      else if (session.user.id_privilegios == constants.privileges.user) {
+        router.replace('/screens/InitialMenu');
       }
-      router.replace('/screens/InitialMenu');
     } else {
       setShowAlert(true);
     }

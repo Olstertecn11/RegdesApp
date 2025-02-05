@@ -6,6 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { getChurchs } from '../../services/church';
 import { getClasses } from '../../services/classes';
 import { useSession } from '../../context/SessionContext';
+import MenuBar from '../../components/ui/MenuBar';
 
 export default function InitialMenu() {
   const { user, saveSession } = useSession();
@@ -72,13 +73,7 @@ export default function InitialMenu() {
         <Box alignItems="center" mt={4}>
           <TitleSpan title={['REG', 'DES']} />
         </Box>
-        <Avatar
-          size="lg"
-          src={
-            'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-          }
-          mt={4}
-        />
+        <MenuBar />
       </HStack>
 
       <VStack space={6} alignItems="center" px={8} mt={12}>
