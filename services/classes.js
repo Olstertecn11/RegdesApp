@@ -21,3 +21,7 @@ export const _newClass = async (newClass) => {
 export const _newAsignedClass = async (newClass) => {
   return handleRequest(() => api.post('/asignaciones', newClass));
 }
+
+export const getClassById = async (id) => {
+  return handleRequest(() => api.get(`/clase/${id}`));
+}
