@@ -23,7 +23,7 @@ export default function TeacherMenu() {
   const [newClass, setNewClass] = React.useState(emptyClass);
 
   const isFocused = useIsFocused();
-  const { user } = useSession();
+  const { user, saveSession } = useSession();
   console.log(user);
 
   const fetch = async () => {
@@ -36,7 +36,7 @@ export default function TeacherMenu() {
     console.log('have class', _haveClass);
     if (_haveClass) {
       router.push('/screens/TeacherClass', { id_clase: _haveClass.id_clase });
-      console.log('have class');
+      saveSession({ ...user, clase: _haveClass });
     }
     setHaveClass(_haveClass);
     const responseChurchs = await getChurchs();

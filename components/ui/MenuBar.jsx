@@ -2,10 +2,17 @@ import { Avatar, Text, Box, Menu, Pressable } from "native-base";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useSession } from "../../context/SessionContext";
 import { Toast } from "native-base";
+import profile_image from '../../assets/images/profile_image.jpg'
+import Feather from '@expo/vector-icons/Feather';
+import Entypo from '@expo/vector-icons/Entypo';
+import { constants } from '../../constants/env';
+import { useRouter } from 'expo-router';
 
 const MenuBar = () => {
 
-  const { clearSession } = useSession();
+  const { user, clearSession } = useSession();
+  const isStudent = user.user.id_privilegios === constants.privileges.user;
+  const router = useRouter();
 
   const closeSession = () => {
     clearSession();
@@ -18,6 +25,14 @@ const MenuBar = () => {
     });
   }
 
+  const _redirectToHome = () => {
+    if (isStudent) {
+      router.push('/screens/InitialMenu');
+    } else {
+      router.push('/screens/TeacherMenu');
+    }
+  }
+
 
   return (
     <Box w="90%" alignItems="center">
@@ -25,16 +40,16 @@ const MenuBar = () => {
         return <Pressable accessibilityLabel="More options menu" {...triggerProps}>
           <Avatar
             size="md"
-            src={
-              'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+            source={
+              profile_image
             }
             mt={4}
           />
         </Pressable>;
       }}>
-        <Menu.Item>SF Pro</Menu.Item>
-        <Menu.Item>Helvetica</Menu.Item>
-        <Menu.Item onPress={closeSession}>Salir <AntDesign name="logout" size={14} color="red" /></Menu.Item>
+        <Menu.Item onPress={_redirectToHome}> <Entypo name="home" size={14} color="black" /> Inicio</Menu.Item>
+        <Menu.Item> <Feather name="settings" size={14} color="black" /> Configuración</Menu.Item>
+        <Menu.Item onPress={closeSession}> <AntDesign name="logout" size={14} color="red" />Salir</Menu.Item>
       </Menu>
     </Box>
   );

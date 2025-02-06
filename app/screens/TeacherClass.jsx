@@ -12,14 +12,12 @@ export default function TeacherClass() {
   const { user } = useSession();
   const isFocused = useIsFocused();
   const router = useRouter();
-  const { id_clase } = router.params;
-  const [myclass, setMyClass] = React.useState(null);
+  const [myclass, setMyClass] = React.useState();
 
   const fetchClasses = async () => {
     const response = await getClasses();
     if (response.status === 200) {
-      console.log(response.data);
-      const _myclass = response.data.find(clase => clase.id_clase === id_clase);
+      const _myclass = response.data.find(clase => clase.id === user.clase.id_clase);
       setMyClass(_myclass);
     }
   }
@@ -41,7 +39,7 @@ export default function TeacherClass() {
       </HStack>
       <VStack alignItems="center" mt={4}>
         <Text color="white" fontSize="2xl">Clase
-          {myclass && <Text color="white" fontSize="2xl"> {myclass.nombre}</Text>}
+          {myclass && <Text color="white" fontSize="2xl" fontWeight='bold'> {myclass.nombre}</Text>}
         </Text>
       </VStack>
 
