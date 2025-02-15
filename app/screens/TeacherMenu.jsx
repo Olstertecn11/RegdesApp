@@ -56,9 +56,11 @@ export default function TeacherMenu() {
     console.log(newClass);
     const response = await _newClass(newClass);
     console.log(response);
+    console.log(response.error);
     if (response.status === 201) {
-      const responseAsigned = await _newAsignedClass({ id_maestro: user.user.id, id_clase: response.data.id_clase });
-      console.log(responseAsigned);
+      const responseAsigned = await _newAsignedClass({ id_maestro: user.user.id, id_clase: response.data.id_clase, is_estudiante: false });
+      console.log('asigned');
+      console.log(responseAsigned.error);
       if (responseAsigned.status === 201) {
         fetch();
         Toast.show({

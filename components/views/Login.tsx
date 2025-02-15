@@ -8,6 +8,7 @@ import { login, getInfo } from '../../services/auth';
 import { useSession } from '../../context/SessionContext';
 import { useIsFocused } from '@react-navigation/native';
 import { constants } from '../../constants/env';
+import { Toast } from 'native-base';
 
 export default function Login() {
   const { saveSession, user: sessionUser } = useSession();
@@ -21,15 +22,25 @@ export default function Login() {
 
   const handleLogin = async () => {
     const response = await login(user);
+    console.log(response);
     if (response.status === 200) {
       const session = { token: response.data.token, user: response.data.usuarioDB };
       saveSession(session);
-      if (session.user.id_privilegios == constants.privileges.teacher) {
-        router.push('/screens/TeacherMenu' as any);
-      }
-      else if (session.user.id_privilegios == constants.privileges.user) {
-        router.replace('/screens/InitialMenu');
-      }
+      Toast.show({
+        title: "Bienvenido",
+        description: "Iniciaste sesión correctamente.",
+        placement: 'top',
+        duration: 3000
+      });
+      setTimeout(() => {
+        if (session.user.id_privilegios == constants.privileges.teacher) {
+          router.push('/screens/TeacherMenu' as any);
+        }
+        else if (session.user.id_privilegios == constants.privileges.user) {
+          router.replace('/screens/InitialMenu');
+        }
+
+      }, 1000);
     } else {
       setShowAlert(true);
     }
