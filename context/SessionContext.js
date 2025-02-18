@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { _logout } from "@/services/auth";
 
 const SessionContext = createContext();
 
@@ -39,6 +40,7 @@ export const SessionProvider = ({ children }) => {
 
   const clearSession = async () => {
     try {
+      await _logout(user.token);
       await AsyncStorage.removeItem("user");
       setUser(null);
       router.replace("/");

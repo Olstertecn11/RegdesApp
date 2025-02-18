@@ -5,8 +5,9 @@ export const login = async (credentials) => {
   return handleRequest(() => api.post('/login', { usuario: credentials.username, contrasena: credentials.password, correo: 'fasdf' }));
 }
 
-export const logout = async (token) => {
-  return handleRequest(() => api.post('/logout', { token }));
+export const _logout = async (token) => {
+  // make post request to logout but passing Authorization header with token
+  return handleRequest(() => api.post('/logout', {}, { headers: { Authorization: `Bearer ${token}` } }));
 }
 
 export const getInfo = async (user) => {

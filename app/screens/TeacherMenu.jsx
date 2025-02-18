@@ -11,6 +11,8 @@ import { useSession } from '../../context/SessionContext';
 import MenuBar from '../../components/ui/MenuBar';
 
 
+
+
 export default function TeacherMenu() {
   const router = useRouter();
 
@@ -35,7 +37,7 @@ export default function TeacherMenu() {
     const _haveClass = classes.find(clase => clase.id_maestro === id_user);
     console.log('have class', _haveClass);
     if (_haveClass) {
-      router.push('/screens/TeacherClass', { id_clase: _haveClass.id_clase });
+      router.push('/screens/TeacherDashboard', { id_clase: _haveClass.id_clase });
       saveSession({ ...user, clase: _haveClass });
     }
     setHaveClass(_haveClass);

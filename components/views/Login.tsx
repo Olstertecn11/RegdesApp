@@ -24,7 +24,7 @@ export default function Login() {
     const response = await login(user);
     console.log(response);
     if (response.status === 200) {
-      const session = { token: response.data.token, user: response.data.usuarioDB };
+      const session = { token: response.data.token, user: response.data.user };
       saveSession(session);
       Toast.show({
         title: "Bienvenido",
