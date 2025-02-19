@@ -36,7 +36,7 @@ const MenuBar = () => {
 
   return (
     <Box w="90%" alignItems="center">
-      <Menu w="190" trigger={triggerProps => {
+      <Menu bg={'gray.200'} w="190" trigger={triggerProps => {
         return <Pressable accessibilityLabel="More options menu" {...triggerProps}>
           <Avatar
             size="md"

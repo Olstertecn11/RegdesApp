@@ -18,10 +18,10 @@ export default function Layout() {
         const session = await AsyncStorage.getItem('user');
         if (session) {
           console.log('Session found');
-
         } else {
+          const route = router.getCurrentRoute();
+          console.log('Route:', route);
           router.replace("/");
-          console.log('Session not found');
         }
       }
       fetch();
