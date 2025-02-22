@@ -4,7 +4,7 @@ import { Input, Text, Box, Button, VStack, Select, CheckIcon, Avatar, HStack } f
 import TitleSpan from '../../components/ui/TitleSpan';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
-import { getClasses, getAsignedClasses, _newClass, _newAsignedClass } from '../../services/classes';
+import { assignedMeToClass, getMyAssignedClass, getClasses, getAsignedClasses, _newClass, _newAsignedClass } from '../../services/classes';
 import { getChurchs } from '../../services/church';
 import { Toast } from 'native-base';
 import { useSession } from '../../context/SessionContext';
@@ -26,21 +26,24 @@ export default function TeacherMenu() {
 
   const isFocused = useIsFocused();
   const { user, saveSession } = useSession();
-  console.log(user);
 
   const fetch = async () => {
-    const response = await getAsignedClasses();
-    const classes = response.data;
-    const id_user = user.user.id;
-    console.log(classes);
-    console.log(id_user);
-    const _haveClass = classes.find(clase => clase.id_maestro === id_user);
-    console.log('have class', _haveClass);
-    if (_haveClass) {
-      router.push('/screens/TeacherDashboard', { id_clase: _haveClass.id_clase });
-      saveSession({ ...user, clase: _haveClass });
+    const response = await getMyAssignedClass(user.user.id);
+    if (response.status === 200) {
+      if (response.data) {
+        const _haveClass = response.data;
+        console.log('have class', _haveClass);
+        setHaveClass(_haveClass);
+        saveSession({ ...user, clase: _haveClass });
+        router.push('/screens/TeacherDashboard', { id_clase: _haveClass.id_clase });
+      }
+      else {
+        setHaveClass(false);
+      }
     }
-    setHaveClass(_haveClass);
+
+
+
     const responseChurchs = await getChurchs();
     if (responseChurchs.status === 200) {
       setChurchs(responseChurchs.data);
@@ -55,33 +58,29 @@ export default function TeacherMenu() {
   }, [isFocused]);
 
   const createClass = async () => {
-    console.log(newClass);
-    const response = await _newClass(newClass);
-    console.log(response);
-    console.log(response.error);
-    if (response.status === 201) {
-      const responseAsigned = await _newAsignedClass({ id_maestro: user.user.id, id_clase: response.data.id_clase, is_estudiante: false });
-      console.log('asigned');
-      console.log(responseAsigned.error);
-      if (responseAsigned.status === 201) {
-        fetch();
+    console.log('creating')
+    const response_created = await _newClass(newClass);
+    console.log(response_created);
+    if (response_created.status === 201) {
+      const class_id = response_created.data.id_clase;
+      const response = await assignedMeToClass(user.user.id, class_id, false);
+      console.log(response);
+      if (response.status === 201) {
+        saveSession({ ...user, clase: class_id });
         Toast.show({
-          title: "Clase creada",
-          status: "success",
-          description: "La clasese ha creado correctamente",
-          duration: 9000,
-          isClosable: true,
+          title: 'Clase creada',
+          status: 'success'
         });
+        setTimeout(() => {
+          router.push('/screens/TeacherMenu');
+        }, 1000);
         return;
       }
+      Toast.show({
+        title: 'Error al crear la clase',
+        status: 'error'
+      });
     }
-    Toast.show({
-      title: "Error",
-      status: "error",
-      description: "Ha ocurrido un error al crear la clase",
-      duration: 9000,
-      isClosable: true,
-    });
   }
 
 

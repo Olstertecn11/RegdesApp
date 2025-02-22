@@ -4,9 +4,10 @@ import TitleSpan from '../../components/ui/TitleSpan';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { getChurchs } from '../../services/church';
-import { getClasses, getAsignedClasses, getClassById } from '../../services/classes';
+import { assignedMeToClass, getClasses, getMyAssignedClass } from '../../services/classes';
 import { useSession } from '../../context/SessionContext';
 import MenuBar from '../../components/ui/MenuBar';
+import { Toast } from 'native-base';
 
 export default function InitialMenu() {
   const { user, saveSession } = useSession();
@@ -16,31 +17,55 @@ export default function InitialMenu() {
   const [classes, setClasses] = React.useState([]);
   const [filteredClasses, setFilteredClasses] = React.useState([]);
   const [canContinue, setCanContinue] = React.useState(false);
-  const [asignedClasses, setAsignedClasses] = React.useState([]);
+  const [asignedClass, setAsignedClass] = React.useState([]);
+  const [haveAssignedClass, setHaveAssignedClass] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const router = useRouter();
   const isFocused = useIsFocused();
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    setLoading(true);
     if (!selectedChurch || !selectedClass) return;
-    const selcted_class = { id_church: selectedChurch, id_class: selectedClass };
-    saveSession({ ...user, selcted_class });
-    router.push('/screens/Dashboard');
+    console.log('making');
+    const response = await assignedMeToClass(user.user.id, selectedClass);
+    console.log(response);
+    if (response.status === 201) {
+      Toast.show({
+        title: 'Clase asignada',
+        description: 'Tu clase ha sido asignada correctamente',
+        placement: 'top',
+        duration: 1000,
+      });
+
+      setTimeout(() => {
+        saveSession({ ...user, selectedClass });
+        router.push('/screens/Dashboard');
+      }, 1000);
+      return;
+    }
+    Toast.show({
+      title: 'Error',
+      description: 'Ocurrio un error al asignar la clase',
+      placement: 'top',
+      duration: 1000,
+    });
   };
 
   const fetchAsignedClasses = async () => {
-    const response = await getAsignedClasses();
-    if (response.status === 200) {
-      const asignedClasses = response.data;
-      console.log(asignedClasses);
-      const userAsigned = asignedClasses.find((asigned) => asigned.id_user === user.id);
-      if (userAsigned) {
-        const response_find_class = await getClassById(userAsigned.id_class);
-        if (response_find_class.status === 200) {
-          console.log(response_find_class.data);
-          setAsignedClasses(response_find_class.data);
-        }
+    const _response = await getMyAssignedClass(user.user.id);
+    console.log(_response.data);
+    if (_response.status === 200) {
+      if (_response.data.length < 1) {
+        console.log('not have assigned class');
+        setHaveAssignedClass(false);
+        return;
       }
+      else {
+        const asigned_class = _response.data;
+        setAsignedClass(asigned_class);
+      }
+      setHaveAssignedClass(true);
     }
   }
 
@@ -53,7 +78,6 @@ export default function InitialMenu() {
         if (response.status === 200) {
           setChurchs(response.data);
         }
-
         const responseClasses = await getClasses();
         if (responseClasses.status === 200) {
           setClasses(responseClasses.data);
@@ -95,7 +119,7 @@ export default function InitialMenu() {
         <MenuBar />
       </HStack>
 
-      {asignedClasses == false &&
+      {haveAssignedClass == false &&
         (
           <VStack space={6} alignItems="center" px={8} mt={12}>
             <Select
@@ -153,6 +177,7 @@ export default function InitialMenu() {
               mt="5"
               bg="#3A9E7F"
               w="40%"
+              isLoading={loading}
               isDisabled={!canContinue}
               borderRadius="25px"
               _pressed={{ bg: '#317C68' }}
@@ -164,14 +189,28 @@ export default function InitialMenu() {
         )
       }
 
-      {asignedClasses != false && (
-        <Box>
-          <Text color="white" fontSize={20} textAlign="center">
-            Tu clase asignada es:
+      {haveAssignedClass && (
+        <Box mt={'10%'}>
+          <Text color="white" fontSize={25} textAlign="center">
+            Bienvenido{' '}
+            <Text fontWeight="bold" color="yellow">
+              {user.user.usuario}
+            </Text>{' '}
+            a la clase{' '}
+            <Text fontWeight="bold" color="lightblue">
+              {asignedClass.clase}
+            </Text>
           </Text>
+          {
+            // create a box like line divisor color green
+            <Box>
+              <Box bg="#3A9E7F" h={2} w="80%" mt={4} ml={6} borderRadius={'full'} />
+              <Box bg="gray.800" h={2} w="70%" mt={1} ml={20} borderRadius={'full'} />
+            </Box>
+          }
         </Box>
       )
       }
-    </Box>
+    </Box >
   );
 }
