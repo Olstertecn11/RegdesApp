@@ -6,6 +6,8 @@ import MenuBar from "../../components/ui/MenuBar";
 import { useRouter } from "expo-router";
 
 const TeacherDashboard = () => {
+
+
   return (
     <Box flex={1} bg="black" safeArea px={5} py={3}>
       <HStack justifyContent="space-between" alignItems="center" px={4}>
@@ -19,7 +21,7 @@ const TeacherDashboard = () => {
         <VStack space={5}>
           <HStack space={5}>
             <PressableCard icon="user" label="Estudiantes" iconLib="FontAwesome" href='/screens/TeacherClass' />
-            <PressableCard icon="calendar-check-outline" label="Asistencia" />
+            <PressableCard icon="calendar-check-outline" label="Asistencia" href='/screens/AsistenceTeacher' />
           </HStack>
           <HStack space={5}>
             <PressableCard icon="ab-testing" label="Pruebas" iconLib="MaterialCommunityIcons" />
