@@ -40,3 +40,7 @@ export const assignedMeToClass = async (id_user, id_class, student = true) => {
   return handleRequest(() => api.post(`/asignacion-clase`, { id_usuario: id_user, id_clase: id_class, es_estudiante: 0 }));
 }
 
+export const getStudentsByClass = async (id_class) => {
+  return handleRequest(() => api.get(`/asignacion-clase/${id_class}`));
+}
+
