@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
 import { getClasses, getStudentsByClass } from "../../services/classes";
+import AddStudent from "../../components/ui/AddStudent";
 
 const StudentList = ({ classId }) => {
   const [students, setStudents] = useState([]);
@@ -26,8 +27,9 @@ const StudentList = ({ classId }) => {
     const fetchStudents = async () => {
       try {
         const response = await getStudentsByClass(classId);
+        console.log(response);
         if (response.status === 200) {
-          setStudents(response.data);
+          setStudents(response.data.filter(student => student.es_estudiante > 0));
         }
       } catch (error) {
         console.error("Error al obtener estudiantes:", error);
@@ -89,6 +91,7 @@ export default function TeacherClass() {
   const router = useRouter();
   const [myclass, setMyClass] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchClasses = useCallback(async () => {
     if (!user?.clase?.id_clase) return;
@@ -114,6 +117,13 @@ export default function TeacherClass() {
       fetchClasses();
     }
   }, [isFocused, fetchClasses]);
+
+
+
+  const closeModal = () => {
+    setModalVisible(false)
+    router.push('/screens/TeacherClass');
+  }
 
   return (
     <Box bg="#0D0D0D" pt={12} px={4} flex={1}>
@@ -152,7 +162,7 @@ export default function TeacherClass() {
       {/* Botón flotante */}
       <TouchableOpacity
         style={{ position: "absolute", bottom: 30, right: 30 }}
-        onPress={() => console.log("Agregar nuevo estudiante")}
+        onPress={() => setModalVisible(true)}
       >
         <Box
           bg="teal.400"
@@ -168,6 +178,11 @@ export default function TeacherClass() {
           </Text>
         </Box>
       </TouchableOpacity>
+      <AddStudent
+        isOpen={modalVisible}
+        onClose={closeModal}
+        update={fetchClasses}
+      />
     </Box>
   );
 }
