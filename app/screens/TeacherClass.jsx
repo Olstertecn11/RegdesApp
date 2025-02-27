@@ -20,6 +20,7 @@ import AddStudent from "../../components/ui/AddStudent";
 const StudentList = ({ classId }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPasswords, setShowPasswords] = useState({});
 
   useEffect(() => {
     if (!classId) return;
@@ -29,6 +30,7 @@ const StudentList = ({ classId }) => {
         const response = await getStudentsByClass(classId);
         console.log(response);
         if (response.status === 200) {
+          console.log(response.data);
           setStudents(response.data.filter(student => student.es_estudiante > 0));
         }
       } catch (error) {
@@ -41,6 +43,13 @@ const StudentList = ({ classId }) => {
     fetchStudents();
   }, [classId]);
 
+  const togglePasswordVisibility = (id) => {
+    setShowPasswords((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const renderItem = ({ item }) => (
     <Box p={4} borderBottomWidth={1} borderColor="teal.200">
       <HStack justifyContent="space-between">
@@ -49,6 +58,9 @@ const StudentList = ({ classId }) => {
         </Text>
         <Text fontSize="sm" color="green.50" flex={1} textAlign="center">
           {item.estudiante}
+        </Text>
+        <Text fontSize="sm" color="green.50" flex={1} textAlign="center" onPress={() => togglePasswordVisibility(item.id_usuario)}>
+          {showPasswords[item.id_usuario] ? item.contraseña : "●●●●●"}
         </Text>
       </HStack>
     </Box>
@@ -66,6 +78,9 @@ const StudentList = ({ classId }) => {
           </Text>
           <Text bold color="white" flex={1} textAlign='center'>
             Nombre
+          </Text>
+          <Text bold color="white" flex={1} textAlign='center'>
+            Contraseña
           </Text>
         </HStack>
       </Box>
@@ -118,8 +133,6 @@ export default function TeacherClass() {
     }
   }, [isFocused, fetchClasses]);
 
-
-
   const closeModal = () => {
     setModalVisible(false)
     router.push('/screens/TeacherClass');
@@ -159,30 +172,15 @@ export default function TeacherClass() {
         <StudentList classId={user?.clase?.id_clase} />
       </Box>
 
-      {/* Botón flotante */}
       <TouchableOpacity
         style={{ position: "absolute", bottom: 30, right: 30 }}
         onPress={() => setModalVisible(true)}
       >
-        <Box
-          bg="teal.400"
-          w={16}
-          h={16}
-          borderRadius={100}
-          alignItems="center"
-          justifyContent="center"
-          shadow={3}
-        >
-          <Text color="white" fontSize="30" textAlign="center">
-            +
-          </Text>
+        <Box bg="teal.400" w={16} h={16} borderRadius={100} alignItems="center" justifyContent="center" shadow={3}>
+          <Text color="white" fontSize="30" textAlign="center">+</Text>
         </Box>
       </TouchableOpacity>
-      <AddStudent
-        isOpen={modalVisible}
-        onClose={closeModal}
-        update={fetchClasses}
-      />
+      <AddStudent isOpen={modalVisible} onClose={closeModal} update={fetchClasses} />
     </Box>
   );
 }
