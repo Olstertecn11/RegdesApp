@@ -4,7 +4,6 @@ import handleRequest from '../utils/handleRequest';
 
 
 export const get_assistence_from_class = async (id_class) => {
-  console.log('enter here')
   return handleRequest(() => api.get(`/asistencia-clase/${id_class}`));
 };
 
@@ -16,3 +15,7 @@ export const create_assistence = async (id_clase, status = 0) => {
 
 
 
+
+export const get_student_assistence = async (id_class) => {
+  return handleRequest(() => api.get(`/asistencia-estudiante/${id_class}`));
+}

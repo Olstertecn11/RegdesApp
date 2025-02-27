@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, Box, Button, VStack, Select, CheckIcon, Avatar, HStack } from 'native-base';
+import { Text, Center, Pressable, Box, Button, VStack, Select, CheckIcon, Avatar, HStack } from 'native-base';
 import TitleSpan from '../../components/ui/TitleSpan';
+import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { getChurchs } from '../../services/church';
@@ -8,6 +9,37 @@ import { assignedMeToClass, getClasses, getMyAssignedClass } from '../../service
 import { useSession } from '../../context/SessionContext';
 import MenuBar from '../../components/ui/MenuBar';
 import { Toast } from 'native-base';
+import { getMyAssignedClass } from '../../services/classes';
+
+
+
+const PressableCard = ({ icon, label, href = '', iconLib = "MaterialCommunityIcons" }) => {
+  const IconComponent = iconLib === "FontAwesome" ? FontAwesome : MaterialCommunityIcons;
+  const router = useRouter();
+
+  const _redirect = () => {
+    router.replace(href);
+  }
+
+
+  return (
+    <Pressable
+      w={'150px'} h={32}
+      bg="gray.700"
+      rounded="xl"
+      justifyContent="center"
+      onPress={_redirect}
+      alignItems="center"
+      _pressed={{ bg: "gray.600" }}
+    >
+      <IconComponent name={icon} size={40} color="white" />
+      <Text mt={2} fontSize="md" bold color="white">
+        {label}
+      </Text>
+    </Pressable>
+  );
+};
+
 
 export default function InitialMenu() {
   const { user, saveSession } = useSession();
@@ -69,6 +101,17 @@ export default function InitialMenu() {
     }
   }
 
+  const fetchMyAssignedClass = async () => {
+
+    const response = await getMyAssignedClass(user.user.id);
+    if (response.status === 200) {
+      if (response.data) {
+        const _haveClass = response.data;
+        saveSession({ ...user, clase: _haveClass });
+      }
+    }
+  }
+
 
 
   React.useEffect(() => {
@@ -85,6 +128,7 @@ export default function InitialMenu() {
       };
       fetch();
       fetchAsignedClasses();
+      fetchMyAssignedClass();
     }
   }, [isFocused]);
 
@@ -198,11 +242,10 @@ export default function InitialMenu() {
             </Text>{' '}
             a la clase{' '}
             <Text fontWeight="bold" color="lightblue">
-              {asignedClass.clase}
+              {asignedClass.clase} kfdsa
             </Text>
           </Text>
           {
-            // create a box like line divisor color green
             <Box>
               <Box bg="#3A9E7F" h={2} w="80%" mt={4} ml={6} borderRadius={'full'} />
               <Box bg="gray.800" h={2} w="70%" mt={1} ml={20} borderRadius={'full'} />
@@ -211,6 +254,25 @@ export default function InitialMenu() {
         </Box>
       )
       }
+
+      <Box bg="black" px={5} py={3} mt={'60%'}>
+        <Text color="white" fontSize={25} textAlign="center">kfjdlasjfkajsk</Text>
+        <Center flex={1} mt={-40} pt={0}>
+          <VStack space={5}>
+            <HStack space={5}>
+              <PressableCard icon="user" label="Estudiantes" iconLib="FontAwesome" href='/screens/TeacherClass' />
+              <PressableCard icon="calendar-check-outline" label="Asistencia" href='/screens/AssitenceStudent' />
+            </HStack>
+            <HStack space={5}>
+              <PressableCard icon="ab-testing" label="Pruebas" iconLib="MaterialCommunityIcons" />
+              <PressableCard icon="cog-outline" label="Configuración" />
+            </HStack>
+          </VStack>
+        </Center>
+      </Box>
+
+
+
     </Box >
   );
 }

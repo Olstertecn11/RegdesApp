@@ -59,9 +59,6 @@ const StudentList = ({ classId }) => {
         <Text fontSize="sm" color="green.50" flex={1} textAlign="center">
           {item.estudiante}
         </Text>
-        <Text fontSize="sm" color="green.50" flex={1} textAlign="center" onPress={() => togglePasswordVisibility(item.id_usuario)}>
-          {showPasswords[item.id_usuario] ? item.contraseña : "●●●●●"}
-        </Text>
       </HStack>
     </Box>
   );
@@ -70,7 +67,6 @@ const StudentList = ({ classId }) => {
     <Spinner color="teal.500" size="lg" mt={4} />
   ) : (
     <Box flex={1}>
-      {/* Header de la tabla */}
       <Box bg="teal.700" p={3} borderTopRadius={10}>
         <HStack justifyContent="space-between">
           <Text bold color="white" flex={1} textAlign="center">
@@ -78,9 +74,6 @@ const StudentList = ({ classId }) => {
           </Text>
           <Text bold color="white" flex={1} textAlign='center'>
             Nombre
-          </Text>
-          <Text bold color="white" flex={1} textAlign='center'>
-            Contraseña
           </Text>
         </HStack>
       </Box>
