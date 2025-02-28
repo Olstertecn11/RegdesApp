@@ -9,7 +9,6 @@ import { assignedMeToClass, getClasses, getMyAssignedClass } from '../../service
 import { useSession } from '../../context/SessionContext';
 import MenuBar from '../../components/ui/MenuBar';
 import { Toast } from 'native-base';
-import { getMyAssignedClass } from '../../services/classes';
 
 
 
@@ -242,7 +241,7 @@ export default function InitialMenu() {
             </Text>{' '}
             a la clase{' '}
             <Text fontWeight="bold" color="lightblue">
-              {asignedClass.clase} kfdsa
+              {asignedClass.clase}
             </Text>
           </Text>
           {

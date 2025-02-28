@@ -6,6 +6,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { create_assistence, get_assistence_from_class } from "../../services/assistence";
 import { Toast } from "native-base";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import TitleSpan from "../../components/ui/TitleSpan";
+import MenuBar from "../../components/ui/MenuBar";
 
 
 
@@ -103,6 +105,13 @@ const AsistenceTeacher = () => {
 
   return (
     <Box flex={1} bg="#0D0D0D" p={4}>
+      <HStack justifyContent="space-between" alignItems="center" px={4} mb='10%'>
+        <Box alignItems="center" mt={4}>
+          <TitleSpan title={['REG', 'DES']} />
+        </Box>
+        <MenuBar />
+      </HStack>
+
       <Text color="white" fontSize="2xl" mb={4}>
         Asistencias Registradas para la clase
       </Text>

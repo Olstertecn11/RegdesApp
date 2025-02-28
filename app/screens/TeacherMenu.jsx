@@ -29,6 +29,8 @@ export default function TeacherMenu() {
 
   const fetch = async () => {
     const response = await getMyAssignedClass(user.user.id);
+    console.log('myresponse');
+    console.log(response);
     if (response.status === 200) {
       if (response.data) {
         const _haveClass = response.data;

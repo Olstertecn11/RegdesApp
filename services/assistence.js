@@ -14,6 +14,9 @@ export const create_assistence = async (id_clase, status = 0) => {
 }
 
 
+export const create_student_assistence = async (id_asistencia, id_estudiante, status) => {
+  return handleRequest(() => api.post(`/asistencia-estudiante`, { id_asistencia, id_estudiante, status }));
+}
 
 
 export const get_student_assistence = async (id_class) => {
