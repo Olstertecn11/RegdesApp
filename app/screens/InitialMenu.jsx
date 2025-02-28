@@ -259,7 +259,7 @@ export default function InitialMenu() {
         <Center flex={1} mt={-40} pt={0}>
           <VStack space={5}>
             <HStack space={5}>
-              <PressableCard icon="notebook-edit" label="Encuestas" iconLib="MaterialCommunityIcons" href='/screens/TeacherClass' />
+              <PressableCard icon="notebook-edit" label="Encuestas" iconLib="MaterialCommunityIcons" href='/screens/Encuesta' />
               <PressableCard icon="calendar-check-outline" label="Asistencia" href='/screens/AssitenceStudent' />
             </HStack>
             <HStack space={5}>
