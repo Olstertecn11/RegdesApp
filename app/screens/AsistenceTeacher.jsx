@@ -8,30 +8,26 @@ import { Toast } from "native-base";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import TitleSpan from "../../components/ui/TitleSpan";
 import MenuBar from "../../components/ui/MenuBar";
-
-
-
+import { useRouter } from "expo-router";
 
 const AsistenceTeacher = () => {
   const isFocused = useIsFocused();
   const { user } = useSession();
-  console.log(user);
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();  // Usar router aquí en el nivel superior
 
   const closeAssistence = async (fecha) => {
     Toast.show({
-      title: `Cerrando asistencia del dia ${fecha}`,
+      title: `Cerrando asistencia del día ${fecha}`,
       status: "warning",
       duration: 1000,
       position: "top",
     });
-  }
+  };
 
   const createAssistence = async () => {
     const response = await create_assistence(user.clase.id_clase, 1);
-    console.log(response);
     setLoading(true);
     if (response.status === 201) {
       Toast.show({
@@ -48,7 +44,6 @@ const AsistenceTeacher = () => {
 
   const getAsistencias = async () => {
     const response = await get_assistence_from_class(user.clase.id_clase);
-    console.log(response);
     if (response.status === 200 && response.data) {
       setAsistencias(response.data);
     }
@@ -71,12 +66,9 @@ const AsistenceTeacher = () => {
           {new Date(item.fecha).toLocaleDateString()}
         </Text>
         <HStack space={2}>
-
           <Button
             bg='#3A9E7F'
-            onPress={() => {
-              router.replace(`/screens/AssistenceDetail/${item.id}`);
-            }}
+            onPress={() => router.replace({ pathname: `/screens/AssistenceDetail`, params: { fecha: new Date(item.fecha).toLocaleDateString(), id: item.id } })}
           ><AntDesign name="eye" size={14} color="white" /></Button>
           <Button
             onPress={() => closeAssistence(new Date(item.fecha).toLocaleDateString())}
