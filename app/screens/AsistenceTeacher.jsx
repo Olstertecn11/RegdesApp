@@ -17,9 +17,10 @@ const AsistenceTeacher = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();  // Usar router aquí en el nivel superior
 
-  const closeAssistence = async (fecha) => {
+  const closeAssistence = async (id_asistencia) => {
+
     Toast.show({
-      title: `Cerrando asistencia del día ${fecha}`,
+      title: `Cerrando asistencia del día ${id_asistencia}`,
       status: "warning",
       duration: 1000,
       position: "top",
@@ -59,11 +60,11 @@ const AsistenceTeacher = () => {
   const renderItem = ({ item }) => (
     <Box p={4} borderBottomWidth={1} borderColor="teal.300">
       <HStack justifyContent="space-between">
-        <Text bold fontSize="md" color="teal.600" textAlign='center'>
-          {item.id}
-        </Text>
         <Text fontSize="sm" color="gray.500" textAlign='center'>
           {new Date(item.fecha).toLocaleDateString()}
+        </Text>
+        <Text bold fontSize="md" color={`${item.status > 0 ? 'teal.600' : 'red.600'}`} textAlign='center'>
+          {item.status > 0 ? "Abierta" : "Cerrada"}
         </Text>
         <HStack space={2}>
           <Button
@@ -71,7 +72,7 @@ const AsistenceTeacher = () => {
             onPress={() => router.replace({ pathname: `/screens/AssistenceDetail`, params: { fecha: new Date(item.fecha).toLocaleDateString(), id: item.id } })}
           ><AntDesign name="eye" size={14} color="white" /></Button>
           <Button
-            onPress={() => closeAssistence(new Date(item.fecha).toLocaleDateString())}
+            onPress={() => closeAssistence(item.id)}
             background={'red.500'}
           ><AntDesign name="closecircle" size={14} color="white" /></Button>
         </HStack>
@@ -83,7 +84,7 @@ const AsistenceTeacher = () => {
     <Box p={4} borderBottomWidth={1} borderColor="teal.300">
       <HStack justifyContent="space-between">
         <Text bold fontSize="md" color="white" textAlign='center'>
-          ID
+          Fecha
         </Text>
         <Text bold fontSize="md" color="white" textAlign='center'>
           Fecha

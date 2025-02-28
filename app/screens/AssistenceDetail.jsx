@@ -6,7 +6,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Toast } from "native-base";
 import { useIsFocused } from "@react-navigation/native";
 import { useSession } from "../../context/SessionContext";
-import { get_student_assistence } from "../../services/assistence";
+import { get_assistence_list_from_class } from "../../services/assistence";
 
 const AssistenceDetail = () => {
   const params = useLocalSearchParams();
@@ -14,14 +14,17 @@ const AssistenceDetail = () => {
   const { fecha, id } = params;
   const { user } = useSession();
   const [asistencias, setAsistencias] = React.useState([]);
-  console.log(fecha);
 
 
   const fetchAssistence = async () => {
-    const response = await get_student_assistence(user.clase.id_clase);
+
+    var fecha_formatted = fecha.split('/');
+    const day = fecha_formatted[0].length === 1 ? `0${fecha_formatted[0]}` : fecha_formatted[0];
+    fecha_formatted = `${fecha_formatted[2]}-${day}-${fecha_formatted[1]}`;
+
+    const response = await get_assistence_list_from_class(user.clase.id_clase, fecha_formatted);
     if (response.status === 200) {
-      const filtered = response.data.filter((item) => item.id_asistencia == id);
-      setAsistencias(filtered);
+      setAsistencias(response.data);
       return;
     }
     setAsistencias([]);
@@ -53,13 +56,13 @@ const AssistenceDetail = () => {
       {
         // Iterate all asistencias and render them
         asistencias.map((item, index) => (
-          <Box p={4} borderBottomWidth={1} borderColor="teal.300" key={index} bg='gray.800' borderRadius={6}>
+          <Box p={4} borderBottomWidth={1} borderColor={`${item.asistencia > 0 ? 'teal.300' : 'red.400'}`} key={index} bg='gray.800' borderRadius={6}>
             <HStack justifyContent="space-between">
               <Text bold fontSize="md" color="white" textAlign='center'>
                 {item.usuario}
               </Text>
-              <Text bold fontSize="md" color="teal.600" textAlign='center'>
-                {item.status > 0 ? 'Presente' : 'Ausente'}
+              <Text bold fontSize="md" color={`${item.asistencia > 0 ? 'teal.600' : 'red.400'}`} textAlign='center'>
+                {item.asistencia > 0 ? 'Presente' : 'Ausente'}
               </Text>
             </HStack>
           </Box>

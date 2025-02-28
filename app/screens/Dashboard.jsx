@@ -28,7 +28,8 @@ const Dashboard = () => {
         <HStack space={6} justifyContent="center">
           <TouchableOpacity onPress={() => redirect('/screens/Lessons')} activeOpacity={0.8}>
             <Box w={40} h={40} bg="#212121" borderRadius={15} alignItems="center" justifyContent="center">
-              <FontAwesome name="book" size={70} color="white" />
+              <FontAwesome name="notebook-edit" size={70} color="white" />
+
               <Text color="white" fontWeight="bold" mt={3} fontSize="md">
                 Lecciones
               </Text>
