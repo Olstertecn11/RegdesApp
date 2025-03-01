@@ -18,6 +18,13 @@ const AsistenceTeacher = () => {
   const router = useRouter();  // Usar router aquí en el nivel superior
 
   const closeAssistence = async (id_asistencia) => {
+    Toast.show({
+      title: 'Funcionalidad no disponible',
+      status: "warning",
+      duration: 1000,
+      position: "top",
+    });
+    return;
 
     Toast.show({
       title: `Cerrando asistencia del día ${id_asistencia}`,

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Avatar, Box, Button, FormControl, Input, VStack, Text, Link, IconButton, Alert, HStack, CloseIcon } from 'native-base';
+import { Image, Avatar, Box, Button, FormControl, Input, VStack, Text, Link, IconButton, Alert, HStack, CloseIcon } from 'native-base';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TitleSpan from '../ui/TitleSpan';
@@ -168,8 +168,9 @@ export default function Login() {
             Registrarme
           </Link>
         </Text>
-        <VStack>
-          <Text color='teal.400' textAlign='center' mt={'80%'}>Misión Caribe</Text>
+        <VStack alignItems='center' display={'flex'} flexDir={'column'} pt={'60%'}>
+          <Image source={require('../../assets/images/adventist-icon.png')} alt="Misión Caribe" size={8} />
+          <Text color='teal.800' textAlign='center' mt={'2%'}>Misión Caribe de Costa Rica 🇨🇷</Text>
         </VStack>
       </VStack>
     </Box>

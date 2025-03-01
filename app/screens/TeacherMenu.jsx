@@ -29,12 +29,9 @@ export default function TeacherMenu() {
 
   const fetch = async () => {
     const response = await getMyAssignedClass(user.user.id);
-    console.log('myresponse');
-    console.log(response);
     if (response.status === 200) {
       if (response.data) {
         const _haveClass = response.data;
-        console.log('have class', _haveClass);
         setHaveClass(_haveClass);
         saveSession({ ...user, clase: _haveClass });
         router.push('/screens/TeacherDashboard', { id_clase: _haveClass.id_clase });
@@ -60,13 +57,10 @@ export default function TeacherMenu() {
   }, [isFocused]);
 
   const createClass = async () => {
-    console.log('creating')
     const response_created = await _newClass(newClass);
-    console.log(response_created);
     if (response_created.status === 201) {
       const class_id = response_created.data.id_clase;
       const response = await assignedMeToClass(user.user.id, class_id, false);
-      console.log(response);
       if (response.status === 201) {
         saveSession({ ...user, clase: class_id });
         Toast.show({

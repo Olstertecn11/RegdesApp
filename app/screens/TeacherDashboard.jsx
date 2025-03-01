@@ -23,7 +23,7 @@ const TeacherDashboard = () => {
           </HStack>
           <HStack space={5}>
             <PressableCard icon="ab-testing" label="Pruebas" iconLib="MaterialCommunityIcons" />
-            <PressableCard icon="cog-outline" label="Configuración" />
+            <PressableCard icon="graph" label="Estadísticas" href="/screens/TeacherStatics" />
           </HStack>
         </VStack>
       </Center>
