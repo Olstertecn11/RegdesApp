@@ -168,6 +168,9 @@ export default function Login() {
             Registrarme
           </Link>
         </Text>
+        <VStack>
+          <Text color='teal.400' textAlign='center' mt={'80%'}>Misión Caribe</Text>
+        </VStack>
       </VStack>
     </Box>
   );
