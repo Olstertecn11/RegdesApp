@@ -22,3 +22,10 @@ export const create_student_assistence = async (id_asistencia, id_estudiante, st
 export const get_student_assistence = async (id_class) => {
   return handleRequest(() => api.get(`/asistencia-estudiante/${id_class}`));
 }
+
+
+export const get_assistence_list_from_class = async (id_class, fecha) => {
+  const url = `/asistencia-clase/${id_class}/${fecha}`;
+  console.log(url);
+  return handleRequest(() => api.get(`/asistencia-clase/${id_class}/${fecha}`));
+}
