@@ -1,16 +1,19 @@
-
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Box, Button, FormControl, Radio, TextArea, Text, VStack, HStack } from 'native-base';
+import { Box, Button, FormControl, Radio, TextArea, Text, VStack, HStack, Toast } from 'native-base';
 import TitleSpan from '../../components/ui/TitleSpan';
 import MenuBar from '../../components/ui/MenuBar';
-import axios from 'axios'; // Asegúrate de tener axios instalado para realizar las peticiones HTTP
+import { useSession } from '../../context/SessionContext';
+import { useRouter } from 'expo-router';
+import { sendEncuesta } from '../../services/classes';
 
 const Encuesta = ({ navigation }) => {
+  const { user } = useSession();
+  const router = useRouter();
   const [encuesta, setEncuesta] = useState({
-    id_usuario: '', // Asumo que estos datos los tienes de algún contexto o almacenamiento local
-    id_clase: '',
-    fecha: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+    id_usuario: user.user.id,
+    id_clase: user.clase.id_clase,
+    fecha: new Date().toISOString().split('T')[0],
     comentario: '',
     pregunta_1: '',
     pregunta_2: '',
@@ -28,16 +31,37 @@ const Encuesta = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
+    for (let i = 1; i <= 9; i++) {
+      if (!encuesta[`pregunta_${i}`]) {
+        Toast.show({
+          title: "Debe responder todas las preguntas antes de enviar la encuesta.",
+          status: "error",
+          duration: 2000,
+          position: "top"
+        });
+        return;
+      }
+    }
+
     try {
-      const response = await axios.put('http://yourapi.com/encuesta/:id', encuesta);
-      if (response.status === 200) {
-        // Handle success
-        console.log('Encuesta actualizada con éxito');
-        navigation.goBack(); // O alguna otra acción de navegación
+      const response = await sendEncuesta(encuesta);
+      if (response.status === 201) {
+        Toast.show({
+          title: "Encuesta actualizada con éxito",
+          status: "success",
+          duration: 1000
+        });
+        setTimeout(() => {
+          router.push('/screens/InitialMenu');
+        }, 1000);
       }
     } catch (error) {
       console.error('Error al actualizar encuesta:', error);
-      // Handle error
+      Toast.show({
+        title: "Error al enviar la encuesta",
+        status: "error",
+        duration: 2000
+      });
     }
   };
 
@@ -47,7 +71,7 @@ const Encuesta = ({ navigation }) => {
     { color: 'yellow.500', text: '3 - Neutral' },
     { color: 'orange.500', text: '4 - Satisfecho' },
     { color: 'red.500', text: '5 - Muy Satisfecho' }
-  ]
+  ];
 
   const questions = [
     '¿La enseñanza fue clara y fácil de entender?',
@@ -59,7 +83,7 @@ const Encuesta = ({ navigation }) => {
     '¿La clase te motivó a seguir estudiando la Biblia y asistiendo cada sábado?',
     '¿El tiempo de la clase fue suficiente para cubrir el tema?',
     '¿La clase te ayudó a crecer espiritualmente y fortalecer tu fe?'
-  ]
+  ];
 
   return (
     <ScrollView>
@@ -71,35 +95,32 @@ const Encuesta = ({ navigation }) => {
           <MenuBar />
         </HStack>
         <Box flex={1} p={4} w="100%" bg="gray.800" borderRadius={10} mt={10}>
-          <Text color="white" fontSize="md" textAlign="center">Por favor, califica los siguientes aspectos de la clase en una escala del 1 al 5,
-            donde:
-          </Text>
+          <Text color="white" fontSize="md" textAlign="center">Por favor, califica los siguientes aspectos de la clase en una escala del 1 al 5, donde:</Text>
           <Box bg='gray.900' p={4} mt={4} borderRadius={6}>
             <VStack space={2} mt={2}>
               {satisfaction_status.map((status, index) => (
-                <HStack space={2}>
+                <HStack space={2} key={index}>
                   <Box w={5} h={5} bg={status.color} borderRadius='full' key={index} />
                   <Text color="white">{status.text}</Text>
                 </HStack>
-              ))
-              }
+              ))}
             </VStack>
           </Box>
         </Box>
         <VStack space={4} mt={5}>
-          {Array.from({ length: 9 }, (_, i) => (
-            <FormControl key={i}>
-              <FormControl.Label _text={{ color: 'white' }} flexWrap={'wrap'}>Pregunta {i + 1} {questions[i]}</FormControl.Label>
+          {questions.map((question, index) => (
+            <FormControl key={index} isRequired>
+              <FormControl.Label _text={{ color: 'white' }} flexWrap={'wrap'}>{index + 1}. {question}</FormControl.Label>
               <Radio.Group
-                name={`pregunta_${i + 1}`}
-                accessibilityLabel={`pregunta_${i + 1}`}
-                onChange={value => handleChange(`pregunta_${i + 1}`, value)}
-                value={encuesta[`pregunta_${i + 1}`]}
+                name={`pregunta_${index + 1}`}
+                accessibilityLabel={`pregunta_${index + 1}`}
+                onChange={value => handleChange(`pregunta_${index + 1}`, value)}
+                value={encuesta[`pregunta_${index + 1}`]}
                 colorScheme="emerald"
               >
-                <HStack space={4}>
+                <HStack space={4} bg={'gray.800'} p={2} borderRadius={10} mt={2}>
                   {Array.from({ length: 5 }, (_, j) => (
-                    <Radio value={`${j + 1}`} my={1} _text={{ color: 'white' }} key={j}>
+                    <Radio value={`${j + 1}`} my={1} _text={{ color: 'gray.400' }} key={j}>
                       {j + 1}
                     </Radio>
                   ))}
@@ -107,11 +128,11 @@ const Encuesta = ({ navigation }) => {
               </Radio.Group>
             </FormControl>
           ))}
-
           <FormControl>
             <FormControl.Label _text={{ color: 'white' }}>Comentarios Adicionales</FormControl.Label>
             <TextArea
               h={20}
+              fontSize={18}
               placeholder="Ingresa tus comentarios aquí..."
               backgroundColor="white"
               onChangeText={value => handleChange('comentario', value)}

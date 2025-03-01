@@ -44,3 +44,9 @@ export const getStudentsByClass = async (id_class) => {
   return handleRequest(() => api.get(`/asignacion-clase/${id_class}`));
 }
 
+
+
+export const sendEncuesta = async (encuesta) => {
+  return handleRequest(() => api.post('/encuesta', encuesta));
+}
+
