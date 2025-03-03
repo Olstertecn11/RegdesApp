@@ -173,7 +173,7 @@ export default function TeacherClass() {
           <Text color="white" fontSize="30" textAlign="center">+</Text>
         </Box>
       </TouchableOpacity>
-      <AddStudent isOpen={modalVisible} onClose={closeModal} update={fetchClasses} />
+      <AddStudent isOpen={modalVisible} onClose={closeModal} />
     </Box>
   );
 }
