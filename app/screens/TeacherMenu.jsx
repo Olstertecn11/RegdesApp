@@ -1,59 +1,46 @@
-
-import React from 'react';
-import { Input, Text, Box, Button, VStack, Select, CheckIcon, Avatar, HStack } from 'native-base';
+import React, { useState, useEffect } from 'react';
+import { Input, Text, Box, Button, VStack, Select, CheckIcon, Avatar, HStack, Spinner } from 'native-base';
 import TitleSpan from '../../components/ui/TitleSpan';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
-import { assignedMeToClass, getMyAssignedClass, getClasses, getAsignedClasses, _newClass, _newAsignedClass } from '../../services/classes';
-import { getChurchs } from '../../services/church';
+import { assignedMeToClass, getMyAssignedClass, getChurchs } from '../../services/classes';
 import { Toast } from 'native-base';
 import { useSession } from '../../context/SessionContext';
 import MenuBar from '../../components/ui/MenuBar';
 
-
-
-
 export default function TeacherMenu() {
   const router = useRouter();
-
   const emptyClass = { id_iglesia: '', nombre: '' };
-
-
-
-  const [haveClass, setHaveClass] = React.useState(false);
-  const [churchs, setChurchs] = React.useState([]);
-  const [newClass, setNewClass] = React.useState(emptyClass);
-
+  const [haveClass, setHaveClass] = useState(false);
+  const [churchs, setChurchs] = useState([]);
+  const [newClass, setNewClass] = useState(emptyClass);
+  const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const { user, saveSession } = useSession();
 
   const fetch = async () => {
+    setLoading(true);
     const response = await getMyAssignedClass(user.user.id);
-    if (response.status === 200) {
-      if (response.data) {
-        const _haveClass = response.data;
-        setHaveClass(_haveClass);
-        saveSession({ ...user, clase: _haveClass });
-        router.push('/screens/TeacherDashboard', { id_clase: _haveClass.id_clase });
-      }
-      else {
-        setHaveClass(false);
-      }
+    if (response.status === 200 && response.data) {
+      setHaveClass(true);
+      saveSession({ ...user, clase: response.data });
+      router.push('/screens/TeacherDashboard', { id_clase: response.data.id_clase });
+    } else {
+      setHaveClass(false);
     }
-
-
 
     const responseChurchs = await getChurchs();
     if (responseChurchs.status === 200) {
       setChurchs(responseChurchs.data);
     }
+
+    setLoading(false);
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isFocused) {
       fetch();
     }
-
   }, [isFocused]);
 
   const createClass = async () => {
@@ -68,7 +55,7 @@ export default function TeacherMenu() {
           status: 'success'
         });
         setTimeout(() => {
-          router.push('/screens/TeacherMenu');
+          router.push('/screens/TeacherDashboard');
         }, 1000);
         return;
       }
@@ -79,10 +66,11 @@ export default function TeacherMenu() {
     }
   }
 
-
+  if (loading) {
+    return <Spinner color="cyan.500" />;
+  }
 
   return (
-
     <Box bg="#0D0D0D" pt={12} px={4} h="100vh">
       <HStack justifyContent="space-between" alignItems="center" px={4}>
         <Box alignItems="center" mt={4}>
@@ -101,7 +89,6 @@ export default function TeacherMenu() {
         <Text color="teal.200" fontSize="2xl">
           {haveClass ? 'Tienes una clase asignada' : 'No tienes ninguna clase asignada'}
         </Text>
-
 
         {!haveClass && (
           <Box w="100%">
@@ -128,13 +115,8 @@ export default function TeacherMenu() {
               Crear clase
             </Button>
           </Box>
-        )
-        }
+        )}
       </VStack>
     </Box>
   );
-
-
-
-
 }
