@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, FormControl, Input, IconButton, Toast } from 'native-base';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { register, assignedMeToClass } from '../../services/user';
+import { register } from '../../services/user';
 import { useSession } from '../../context/SessionContext';
+import { assignedMeToClass } from '../../services/classes';
 
 const AddStudent = ({ isOpen, onClose }) => {
   const [usuario, setUsuario] = useState('');
@@ -22,10 +23,12 @@ const AddStudent = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
     const response = await register({ usuario, contrasena, correo });
+    console.log(response);
 
     if (response.status === 201) {
       const user_created = response.data;
       const response2 = await assignedMeToClass(user_created.id, user.clase.id_clase);
+      console.log(response2);
 
       if (response2.status === 201) {
         Toast.show({ title: 'Usuario asignado correctamente' });
